@@ -26,27 +26,6 @@ class Recaptcha extends Module
     }
 
     /**
-     * Module info
-     * @return array
-     */
-    public function info()
-    {
-        return array(
-            'name' => 'reCAPTCHA',
-            'version' => '1.0.0-dev',
-            'description' => 'Enables Google reCAPTCHA spam protection on your GPL Cart site',
-            'author' => 'Iurii Makukh <gplcart.software@gmail.com>',
-            'core' => '1.x',
-            'license' => 'GPL-3.0+',
-            'configure' => 'admin/module/settings/recaptcha',
-            'settings' => array(
-                'key' => '',
-                'secret' => ''
-            )
-        );
-    }
-
-    /**
      * Implements hook "construct.controller"
      * @param \gplcart\core\controllers\frontend\Controller $object
      */
