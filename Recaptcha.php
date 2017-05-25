@@ -39,7 +39,7 @@ class Recaptcha extends Module
 
         $vars = array('recaptcha_key' => $settings['key']);
         $html = $object->render('recaptcha|recaptcha', $vars);
-        $object->setData('captcha', $html);
+        $object->setData('_captcha', $html);
 
         if (!$object->isPosted('g-recaptcha-response')) {
             return null;
