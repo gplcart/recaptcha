@@ -13,14 +13,14 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Site key'); ?></label>
         <div class="col-md-6">
-          <input name="settings[key]" class="form-control" value="<?php echo $this->escape($settings['key']); ?>">
+          <input name="settings[key]" class="form-control" value="<?php echo $this->e($settings['key']); ?>">
           <div class="help-block"><?php echo $this->text('A public key from <a href="@url">reCAPTCHA admin area</a> to be used in the HTML code your site serves to users', array('@url' => 'https://www.google.com/recaptcha/admin')); ?></div>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Secret'); ?></label>
         <div class="col-md-6">
-          <input name="settings[secret]" class="form-control" value="<?php echo $this->escape($settings['secret']); ?>">
+          <input name="settings[secret]" class="form-control" value="<?php echo $this->e($settings['secret']); ?>">
           <div class="help-block"><?php echo $this->text('A secret key from <a href="@url">reCAPTCHA admin area</a> to be used for communication between your site and Google', array('@url' => 'https://www.google.com/recaptcha/admin')); ?></div>
         </div>
       </div>
