@@ -48,8 +48,11 @@ class Recaptcha extends Module
         /* @var $curl \gplcart\core\helpers\Curl */
         $curl = $this->getInstance('gplcart\\core\\helpers\\Curl');
 
+        /* @var $request \gplcart\core\helpers\Request */
+        $request = $this->getInstance('gplcart\\core\\helpers\\Request');
+
         $fields = array(
-            'remoteip' => $object->ip(),
+            'remoteip' => $request->ip(),
             'secret' => $settings['secret'],
             'response' => $object->getPosted('g-recaptcha-response')
         );
