@@ -53,7 +53,7 @@ class Recaptcha extends Module
         $fields = array(
             'remoteip' => $request->ip(),
             'secret' => $settings['secret'],
-            'response' => $object->getPosted('g-recaptcha-response')
+            'response' => $object->getPosted('g-recaptcha-response', '', true, 'string')
         );
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
