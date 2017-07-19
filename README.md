@@ -3,6 +3,10 @@
 
 reCAPTCHA is a [GPL Cart](https://github.com/gplcart/gplcart) module that enables ["Google reCAPTCHA"](www.google.com/recaptcha) spam protection on your site. In order to use this module you must register an account on google.com/recaptcha
 
+**Requirements:**
+
+- CURL
+
 
 **Installation**
 

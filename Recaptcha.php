@@ -26,6 +26,16 @@ class Recaptcha extends Module
     }
 
     /**
+     * Implements hook "module.install.before"
+     */
+    public function hookModuleInstallBefore(&$result)
+    {
+        if (!function_exists('curl_init')) {
+            $result = 'CURL library is not enabled';
+        }
+    }
+
+    /**
      * Implements hook "construct.controller"
      * @param \gplcart\core\controllers\frontend\Controller $object
      */
@@ -57,7 +67,13 @@ class Recaptcha extends Module
         );
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
-        $response = json_decode($curl->post($url, array('fields' => $fields)));
+
+        try {
+            $response = json_decode($curl->post($url, array('fields' => $fields)));
+        } catch (\Exception $ex) {
+            $object->setError('recaptcha', $ex->getMessage());
+            return null;
+        }
 
         if (empty($response->success)) {
             $object->setError('recaptcha', 'You are spammer!');
