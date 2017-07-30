@@ -55,10 +55,10 @@ class Recaptcha extends Module
         }
 
         /* @var $curl \gplcart\core\helpers\Curl */
-        $curl = $this->getInstance('gplcart\\core\\helpers\\Curl');
+        $curl = $this->getHelper('Curl');
 
         /* @var $request \gplcart\core\helpers\Request */
-        $request = $this->getInstance('gplcart\\core\\helpers\\Request');
+        $request = $this->getHelper('Request');
 
         $fields = array(
             'remoteip' => $request->ip(),
@@ -86,7 +86,6 @@ class Recaptcha extends Module
      */
     public function hookRouteList(array &$routes)
     {
-        // Module settings page
         $routes['admin/module/settings/recaptcha'] = array(
             'access' => 'module_edit',
             'handlers' => array(
