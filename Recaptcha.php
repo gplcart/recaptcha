@@ -31,15 +31,15 @@ class Recaptcha extends Module
     public function hookModuleInstallBefore(&$result)
     {
         if (!function_exists('curl_init')) {
-            $result = 'CURL library is not enabled';
+            $result = $this->getLanguage()->text('CURL library is not enabled');
         }
     }
 
     /**
      * Implements hook "construct.controller"
-     * @param \gplcart\core\controllers\frontend\Controller $object
+     * @param \gplcart\core\controllers\frontend\Controller $controller
      */
-    public function hookConstructControllerFrontend($object)
+    public function hookConstructControllerFrontend($controller)
     {
         $settings = $this->config->module('recaptcha');
 
@@ -47,10 +47,10 @@ class Recaptcha extends Module
             return null;
         }
 
-        $html = $object->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
-        $object->setData('_captcha', $html);
+        $html = $controller->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
+        $controller->setData('_captcha', $html);
 
-        if (!$object->isPosted('g-recaptcha-response')) {
+        if (!$controller->isPosted('g-recaptcha-response')) {
             return null;
         }
 
@@ -63,7 +63,7 @@ class Recaptcha extends Module
         $fields = array(
             'remoteip' => $request->ip(),
             'secret' => $settings['secret'],
-            'response' => $object->getPosted('g-recaptcha-response', '', true, 'string')
+            'response' => $controller->getPosted('g-recaptcha-response', '', true, 'string')
         );
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -71,12 +71,12 @@ class Recaptcha extends Module
         try {
             $response = json_decode($curl->post($url, array('fields' => $fields)));
         } catch (\Exception $ex) {
-            $object->setError('recaptcha', $ex->getMessage());
+            $controller->setError('recaptcha', $ex->getMessage());
             return null;
         }
 
         if (empty($response->success)) {
-            $object->setError('recaptcha', 'You are spammer!');
+            $controller->setError('recaptcha', $this->getLanguage()->text('You are spammer!'));
         }
     }
 
