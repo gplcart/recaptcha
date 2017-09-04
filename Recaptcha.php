@@ -18,6 +18,18 @@ class Recaptcha extends Module
 {
 
     /**
+     * Controller class instance
+     * @var \gplcart\core\controllers\frontend\Controller $controller
+     */
+    protected $controller;
+
+    /**
+     * An array of module settings
+     * @var array $settings
+     */
+    protected $settings;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -27,6 +39,7 @@ class Recaptcha extends Module
 
     /**
      * Implements hook "module.install.before"
+     * @param null|string $result
      */
     public function hookModuleInstallBefore(&$result)
     {
@@ -41,16 +54,32 @@ class Recaptcha extends Module
      */
     public function hookConstructControllerFrontend($controller)
     {
-        $settings = $this->config->module('recaptcha');
+        $this->controller = $controller;
+        $this->settings = $this->config->module('recaptcha');
 
-        if (empty($settings['key']) || empty($settings['secret'])) {
-            return null;
+        if (!empty($this->settings['key']) && !empty($this->settings['secret'])) {
+            $this->setCaptcha();
+            $this->processResponse();
         }
+    }
 
-        $html = $controller->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
-        $controller->setData('_captcha', $html);
+    /**
+     * Render and add CAPTCHA
+     */
+    protected function setCaptcha()
+    {
+        $vars = array('recaptcha_key' => $this->settings['key']);
+        $html = $this->controller->render('recaptcha|recaptcha', $vars);
+        $this->controller->setData('_captcha', $html);
+    }
 
-        if (!$controller->isPosted('g-recaptcha-response')) {
+    /**
+     * Process reCAPTCHA's response
+     * @return null|bool
+     */
+    protected function processResponse()
+    {
+        if (!$this->controller->isPosted('g-recaptcha-response')) {
             return null;
         }
 
@@ -62,22 +91,26 @@ class Recaptcha extends Module
 
         $fields = array(
             'remoteip' => $request->ip(),
-            'secret' => $settings['secret'],
-            'response' => $controller->getPosted('g-recaptcha-response', '', true, 'string')
+            'secret' => $this->settings['secret'],
+            'response' => $this->controller->getPosted('g-recaptcha-response', '', true, 'string')
         );
 
-        $url = 'https://www.google.com/recaptcha/api/siteverify';
-
         try {
+            $url = 'https://www.google.com/recaptcha/api/siteverify';
             $response = json_decode($curl->post($url, array('fields' => $fields)));
+            if (empty($response->success)) {
+                $error = $this->controller->text('You are spammer!');
+            }
         } catch (\Exception $ex) {
-            $controller->setError('recaptcha', $ex->getMessage());
-            return null;
+            $error = $ex->getMessage();
         }
 
-        if (empty($response->success)) {
-            $controller->setError('recaptcha', $this->getLanguage()->text('You are spammer!'));
+        if (!empty($error)) {
+            $this->controller->setError('recaptcha', $error);
+            return false;
         }
+
+        return true;
     }
 
     /**
