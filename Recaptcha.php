@@ -95,18 +95,16 @@ class Recaptcha extends Module
             'response' => $this->controller->getPosted('g-recaptcha-response', '', true, 'string')
         );
 
+        $url = 'https://www.google.com/recaptcha/api/siteverify';
+
         try {
-            $url = 'https://www.google.com/recaptcha/api/siteverify';
             $response = json_decode($curl->post($url, array('fields' => $fields)));
-            if (empty($response->success)) {
-                $error = $this->controller->text('You are spammer!');
-            }
         } catch (\Exception $ex) {
-            $error = $ex->getMessage();
+            return null;
         }
 
-        if (!empty($error)) {
-            $this->controller->setError('recaptcha', $error);
+        if (empty($response->success)) {
+            $this->controller->setError('recaptcha', $this->controller->text('You are spammer!'));
             return false;
         }
 
