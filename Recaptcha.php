@@ -9,7 +9,8 @@
 
 namespace gplcart\modules\recaptcha;
 
-use gplcart\core\Module;
+use gplcart\core\Module,
+    gplcart\core\Config;
 
 /**
  * Main class for reCAPTCHA module
@@ -30,11 +31,11 @@ class Recaptcha extends Module
     protected $settings;
 
     /**
-     * Constructor
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**
@@ -55,7 +56,7 @@ class Recaptcha extends Module
     public function hookConstructControllerFrontend($controller)
     {
         $this->controller = $controller;
-        $this->settings = $this->config->module('recaptcha');
+        $this->settings = $this->config->getFromModule('recaptcha');
 
         if (!empty($this->settings['key']) && !empty($this->settings['secret'])) {
             $this->setCaptcha();

@@ -42,7 +42,7 @@ class Settings extends BackendController
         $this->setTitleEditSettings();
         $this->setBreadcrumbEditSettings();
 
-        $this->setData('settings', $this->config->module('recaptcha'));
+        $this->setData('settings', $this->config->getFromModule('recaptcha'));
 
         $this->submitSettings();
         $this->outputEditSettings();
