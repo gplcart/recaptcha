@@ -9,32 +9,26 @@
 
 namespace gplcart\modules\recaptcha;
 
-use gplcart\core\Module,
-    gplcart\core\Config;
+use gplcart\core\Module;
 
 /**
  * Main class for reCAPTCHA module
  */
-class Recaptcha extends Module
+class Recaptcha
 {
 
     /**
-     * @param Config $config
+     * Module class instance
+     * @var \gplcart\core\Module $module
      */
-    public function __construct(Config $config)
-    {
-        parent::__construct($config);
-    }
+    protected $module;
 
     /**
-     * Implements hook "module.install.before"
-     * @param null|string $result
+     * @param Module $module
      */
-    public function hookModuleInstallBefore(&$result)
+    public function __construct(Module $module)
     {
-        if (!function_exists('curl_init')) {
-            $result = $this->getLanguage()->text('CURL library is not enabled');
-        }
+        $this->module = $module;
     }
 
     /**
@@ -67,7 +61,7 @@ class Recaptcha extends Module
     protected function setRecaptcha($controller)
     {
         if (!$controller->isInternalRoute()) {
-            $settings = $this->config->getFromModule('recaptcha');
+            $settings = $this->module->getSettings('recaptcha');
             if (!empty($settings['key']) && !empty($settings['secret'])) {
                 $html = $controller->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
                 $controller->setData('_captcha', $html);
@@ -104,23 +98,22 @@ class Recaptcha extends Module
      */
     protected function queryRecaptcha($controller, array $settings)
     {
-        /* @var $curl \gplcart\core\helpers\Curl */
-        $curl = $this->getHelper('Curl');
-
-        /* @var $request \gplcart\core\helpers\Request */
-        $request = $this->getHelper('Request');
-
-        $fields = array(
-            'remoteip' => $request->ip(),
-            'secret' => $settings['secret'],
-            'response' => $controller->getPosted('g-recaptcha-response', '', true, 'string')
+        $options = array(
+            'method' => 'POST',
+            'data' => array(
+                'secret' => $settings['secret'],
+                'remoteip' => $controller->getIp(),
+                'response' => $controller->getPosted('g-recaptcha-response', '', true, 'string')
+            ),
         );
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
 
         try {
-            return json_decode($curl->post($url, array('fields' => $fields)));
+            $response = $controller->httpRequest($url, $options);
+            return json_decode($response['data']);
         } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
             return null;
         }
     }
