@@ -9,7 +9,8 @@
 
 namespace gplcart\modules\recaptcha;
 
-use gplcart\core\Module;
+use gplcart\core\Module,
+    gplcart\core\Container;
 
 /**
  * Main class for reCAPTCHA module
@@ -110,12 +111,21 @@ class Recaptcha
         $url = 'https://www.google.com/recaptcha/api/siteverify';
 
         try {
-            $response = $controller->httpRequest($url, $options);
+            $response = $this->getSocketClient()->request($url, $options);
             return json_decode($response['data']);
         } catch (\Exception $ex) {
             trigger_error($ex->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Returns Socket client helper class instance
+     * @return \gplcart\core\helpers\SocketClient
+     */
+    protected function getSocketClient()
+    {
+        return Container::get('gplcart\\core\\helpers\\SocketClient');
     }
 
 }
