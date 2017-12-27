@@ -9,13 +9,13 @@
 
 namespace gplcart\modules\recaptcha;
 
-use gplcart\core\Module,
-    gplcart\core\Container;
+use gplcart\core\Container,
+    gplcart\core\Module as CoreModule;
 
 /**
  * Main class for reCAPTCHA module
  */
-class Recaptcha
+class Module
 {
 
     /**
@@ -25,9 +25,9 @@ class Recaptcha
     protected $module;
 
     /**
-     * @param Module $module
+     * @param CoreModule $module
      */
-    public function __construct(Module $module)
+    public function __construct(CoreModule $module)
     {
         $this->module = $module;
     }
