@@ -74,10 +74,11 @@ class Module
     /**
      * Process reCAPTCHA's response
      * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param $settings
+     * @return bool|null
      * @raram array $settings
-     * @return null|bool
      */
-    protected function processRecaptcha($controller, $settings)
+    protected function processRecaptcha($controller, array $settings)
     {
         if ($controller->isPosted('g-recaptcha-response')) {
             $response = $this->queryRecaptcha($controller, $settings);
