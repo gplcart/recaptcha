@@ -122,11 +122,11 @@ class Main
 
     /**
      * Returns Socket client helper class instance
-     * @return \gplcart\core\helpers\SocketClient
+     * @return \gplcart\core\helpers\Socket
      */
     protected function getSocketClient()
     {
-        return Container::get('gplcart\\core\\helpers\\SocketClient');
+        return Container::get('gplcart\\core\\helpers\\Socket');
     }
 
 }
