@@ -1,13 +1,19 @@
 {
-    "name": "gplcart/recaptcha",
-    "type": "gplcart-module",
-    "description": "Integrates Google reCAPTCHA into your GPL Cart site",
-    "keywords": ["gplcart", "ecommerce", "shopping cart", "gplcart module", "php"],
-    "license": "GPL-3.0+",
-    "require": {
-        "gplcart/composer-module-installer": "*",
-        "ext-curl": "*"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "name": "gplcart/recaptcha",
+  "type": "gplcart-module",
+  "description": "Integrates Google reCAPTCHA into your GPL Cart site",
+  "keywords": [
+    "gplcart",
+    "ecommerce",
+    "shopping cart",
+    "gplcart module",
+    "php"
+  ],
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "gplcart/composer-module-installer": "*",
+    "ext-curl": "*"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
