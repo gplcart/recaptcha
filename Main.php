@@ -9,8 +9,9 @@
 
 namespace gplcart\modules\recaptcha;
 
-use gplcart\core\Module,
-    gplcart\core\Container;
+use Exception;
+use gplcart\core\Container;
+use gplcart\core\Module;
 
 /**
  * Main class for reCAPTCHA module
@@ -112,9 +113,9 @@ class Main
         $url = 'https://www.google.com/recaptcha/api/siteverify';
 
         try {
-            $response = $this->getSocketClient()->request($url, $options);
+            $response = $this->getHttpModel()->request($url, $options);
             return json_decode($response['data']);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             trigger_error($ex->getMessage());
             return null;
         }
@@ -122,11 +123,13 @@ class Main
 
     /**
      * Returns Socket client helper class instance
-     * @return \gplcart\core\helpers\Socket
+     * @return \gplcart\core\models\Http
      */
-    protected function getSocketClient()
+    protected function getHttpModel()
     {
-        return Container::get('gplcart\\core\\helpers\\Socket');
+        /** @var \gplcart\core\models\Http $instance */
+        $instance = Container::get('gplcart\\core\\models\\Http');
+        return $instance;
     }
 
 }
