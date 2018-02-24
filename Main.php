@@ -11,6 +11,7 @@ namespace gplcart\modules\recaptcha;
 
 use Exception;
 use gplcart\core\Container;
+use gplcart\core\controllers\frontend\Controller;
 use gplcart\core\Module;
 
 /**
@@ -35,9 +36,9 @@ class Main
 
     /**
      * Implements hook "construct.controller"
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param Controller $controller
      */
-    public function hookConstructControllerFrontend($controller)
+    public function hookConstructControllerFrontend(Controller $controller)
     {
         $this->setRecaptcha($controller);
     }
@@ -57,49 +58,23 @@ class Main
     }
 
     /**
-     * Render and add CAPTCHA
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * Returns rendered rECAPTCHA widget
+     * @param Controller $controller
+     * @param array $settings
+     * @return string
      */
-    protected function setRecaptcha($controller)
+    public function getWidget(Controller $controller, array $settings)
     {
-        if (!$controller->isInternalRoute()) {
-            $settings = $this->module->getSettings('recaptcha');
-            if (!empty($settings['key']) && !empty($settings['secret'])) {
-                $html = $controller->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
-                $controller->setData('_captcha', $html);
-                $this->processRecaptcha($controller, $settings);
-            }
-        }
-    }
-
-    /**
-     * Process reCAPTCHA's response
-     * @param \gplcart\core\controllers\frontend\Controller $controller
-     * @param $settings
-     * @return bool|null
-     * @raram array $settings
-     */
-    protected function processRecaptcha($controller, array $settings)
-    {
-        if ($controller->isPosted('g-recaptcha-response')) {
-            $response = $this->queryRecaptcha($controller, $settings);
-            if (empty($response->success)) {
-                $controller->setError('recaptcha', $controller->text('You are spammer!'));
-                return false;
-            }
-            return true;
-        }
-
-        return null;
+        return $controller->render('recaptcha|recaptcha', array('recaptcha_key' => $settings['key']));
     }
 
     /**
      * Post query to Recaptcha service
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param Controller $controller
      * @param array $settings
-     * @return object|null
+     * @return mixed|null
      */
-    protected function queryRecaptcha($controller, array $settings)
+    public function request(Controller $controller, array $settings)
     {
         $options = array(
             'method' => 'POST',
@@ -122,7 +97,41 @@ class Main
     }
 
     /**
-     * Returns Socket client helper class instance
+     * Process reCAPTCHA response
+     * @param Controller $controller
+     * @param array $settings
+     * @return null|bool
+     */
+    public function process(Controller $controller, array $settings)
+    {
+        if ($controller->isPosted('g-recaptcha-response')) {
+            $response = $this->request($controller, $settings);
+            return !empty($response->success);
+        }
+
+        return null;
+    }
+
+    /**
+     * Render and add CAPTCHA
+     * @param Controller $controller
+     */
+    protected function setRecaptcha(Controller $controller)
+    {
+        if (!$controller->isInternalRoute()) {
+            $settings = $this->module->getSettings('recaptcha');
+            if (!empty($settings['key']) && !empty($settings['secret'])) {
+                $controller->setData('_captcha', $this->getWidget($controller, $settings));
+                $result = $this->process($controller, $settings);
+                if (isset($result) && empty($result)) {
+                    $controller->setError('_captcha', 'Spam submission');
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns Http model class instance
      * @return \gplcart\core\models\Http
      */
     protected function getHttpModel()

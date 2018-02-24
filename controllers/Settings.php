@@ -9,21 +9,13 @@
 
 namespace gplcart\modules\recaptcha\controllers;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\controllers\backend\Controller;
 
 /**
  * Handles incoming requests and outputs data related to reCAPTCHA module
  */
-class Settings extends BackendController
+class Settings extends Controller
 {
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Route page callback to display the module settings page
