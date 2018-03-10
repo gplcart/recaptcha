@@ -119,7 +119,9 @@ class Main
     protected function setRecaptcha(Controller $controller)
     {
         if (!$controller->isInternalRoute()) {
+
             $settings = $this->module->getSettings('recaptcha');
+
             if (!empty($settings['key']) && !empty($settings['secret'])) {
                 $controller->setData('_captcha', $this->getWidget($controller, $settings));
                 $result = $this->process($controller, $settings);
